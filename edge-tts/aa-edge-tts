@@ -1,0 +1,45 @@
+# sudo apparmor_parser --replace --warn all --abort-on-error /home/caioh/Dev/VirtualEnv/edge-tts/aa-edge-tts
+
+abi <abi/4.0>,
+include <tunables/global>
+
+# The first profile for bubblewarp, so it can load a container
+# This is simply a transitory profile to start the container and then drop must permissions
+profile aa_edge_tts flags=(enforce,attach_disconnected) {
+  / rwlmk,
+  /** rwlmkCx -> &aa_edge_tts_py, # Use the "&" to allow transition with no_new_privs to a less privileged profile
+  userns,
+  capability,
+  network,
+  mount,
+  remount,
+  umount,
+  pivot_root,
+  signal,
+  unix,
+  mqueue,
+}
+
+# This is the profile for the apps in the container
+profile aa_edge_tts_py flags=(enforce) {
+  / r,
+  /*/ r,
+  /** ix,
+  /bin/** r,
+  /cdrom/** r,
+  /etc/** r,
+  /lib/** r,
+  /lib64/** r,
+  /opt/** r,
+  /sbin/** r,
+  /srv/** r,
+  /sys/** r,
+  /usr/** r,
+  /var/** r,
+  /tmp/** rwlm,
+  /dev/null rwlmk,
+  /run/systemd/resolve/stub-resolv.conf r, # Allows domains to be resolved, otherwise the container might appear to have no network
+  /home/ r,
+  /home/** rwixlmk,
+  network,
+}
