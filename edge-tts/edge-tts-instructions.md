@@ -6,6 +6,10 @@ Environment: Ubuntu
 
 1. Load the container with `./start-env-edge-tts.sh`
 
+1. Activate python venv: `source /home/edge-tts/bin/activate` 
+
+1. Generate text: `edge-tts --voice pt-BR-FranciscaNeural --file /home/texts/*.txt --write-media /home/texts/*.mp3`
+
 ## Depends on
 
 * Bubblewarp
