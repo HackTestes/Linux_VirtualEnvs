@@ -6,7 +6,13 @@ Environment: Ubuntu
 
 1. Load the container with `bash ./start-env-edge-tts.sh`
 
-1. Activate python venv: `source /home/edge-tts/bin/activate` 
+1. Create private home `mkdir ~`
+
+1. Create pip virtual env `mkdir ~/edge-tts && python -m venv ~/edge-tts`
+
+1. Activate python venv: `source ~/edge-tts/bin/activate`
+
+1. Download edge-tts `pip install edge-tts`
 
 1. Generate text: `edge-tts --voice pt-BR-FranciscaNeural --file /home/texts/*.txt --write-media /home/texts/*.mp3`
 
