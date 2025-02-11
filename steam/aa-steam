@@ -1,0 +1,82 @@
+# This profile allows everything and only exists to give the
+# application a name instead of having the label "unconfined"
+# sudo apparmor_parser --replace --warn all --abort-on-error /home/caioh/Documents/start_as/aa-uncofined-test
+# aa-exec -p user_unconfined PROGRAM
+
+abi <abi/4.0>,
+include <tunables/global>
+
+profile user_aa_steam flags=(enforce, attach_disconnected) {
+  / rwmixlk,
+  /** rwmixlk,
+
+  # System directories
+  / r,
+  /*/ r,
+  /** ix,
+  /bin/** r,
+  /cdrom/** r,
+  /etc/** r,
+  /lib/** r,
+  /lib64/** r,
+  /opt/** r,
+  /sbin/** r,
+  /srv/** r,
+  /sys/** r,
+  /usr/** rk,
+  /var/** r,
+  /proc/** rw,
+  /tmp/** rwlm,
+  /home/** rwixlmk,
+
+  /dev/null rw,
+  /dev/urandom rw,
+  /dev/tty rwkm,
+  /dev/pts/** rw,
+  /dev/nvidia* rw,
+  /dev/dri/ r,
+  /dev/dri/** rwkm,
+  /dev/shm/** rwk,
+  /dev/input/ rw,
+  /dev/input/** rw,
+  /dev/disk/** r,
+
+  /run/ r,
+  /run/user/ r,
+  /run/user/1000 rwl,
+  /run/user/1000/ rwlkm,
+  /run/user/1000/xauth* r,
+  /run/user/1000/wayland-0 rw,
+  /run/user/1000/str-fifo* rwkml,
+  /run/user/1000/str-fifo*/ rwkml,
+  /run/user/1000/str-fifo*/** rwkml,
+  /run/udev/** rw,
+
+  /run/sytemd/ r,
+  /run/systemd/** r,
+
+  /newroot/** rwklm,
+
+  userns,
+  capability,
+  network,
+  mount,
+  remount,
+  umount,
+  pivot_root,
+  signal,
+  unix,
+# mqueue,
+  ptrace,
+
+#dbus send bus=system path=/org/freedesktop/NetworkManager{,/**} interface=org.freedesktop.NetworkManager{,.*},
+#dbus receive bus=system path=/org/freedesktop/NetworkManager{,/**} interface=org.freedesktop.NetworkManager{,.*},
+
+#dbus send bus=system path=/org/freedesktop/NetworkManager{,/**} interface=org.freedesktop.DBus.Properties,
+#dbus receive bus=system path=/org/freedesktop/NetworkManager{,/**} interface=org.freedesktop.DBus.Properties,
+
+#dbus send bus=system path=/org/freedesktop/UPower interface=org.freedesktop.UPower,
+#dbus receive bus=system path=/org/freedesktop/UPower interface=org.freedesktop.UPower,
+
+}
+

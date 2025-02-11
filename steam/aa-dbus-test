@@ -1,0 +1,33 @@
+# This profile allows everything and only exists to give the
+# application a name instead of having the label "unconfined"
+# sudo apparmor_parser --replace --warn all --abort-on-error /home/caioh/Documents/start_as/aa-game-profile-test
+# aa-exec -p user_game PROGRAM
+
+abi <abi/4.0>,
+include <tunables/global>
+
+profile user_dbus flags=(enforce,attach_disconnected) {
+  /** rwixlmk,
+  / rmixlk,
+  /dev/** rwlm,
+  /tmp/** rwlm,
+  /proc/** rwlmk,
+  userns,
+  capability,
+  network,
+  mount,
+  remount,
+  umount,
+  pivot_root,
+  signal,
+  unix,
+  mqueue,
+  ptrace,
+  
+  dbus send bus=session path=/org/freedesktop/DBus{,/**}
+     interface=org.freedesktop.DBus,
+     
+    dbus send bus=session path=/org/freedesktop/DBus{,/**}
+     interface=org.freedesktop.portal*,
+}
+
