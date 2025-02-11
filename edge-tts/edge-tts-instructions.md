@@ -4,11 +4,19 @@ Environment: Ubuntu
 
 1. First load the AppArmor profile with `apparmor_parser` or copy the file into `/etc/apparmor.d/`
 
-1. Load the container with `./start-env-edge-tts.sh`
+1. Load the container with `bash ./start-env-edge-tts.sh`
 
 1. Activate python venv: `source /home/edge-tts/bin/activate` 
 
 1. Generate text: `edge-tts --voice pt-BR-FranciscaNeural --file /home/texts/*.txt --write-media /home/texts/*.mp3`
+
+## Security notes
+
+* It denies access to
+    * All devices, except for /dev/null
+    * To most of the /run directory as it contains many important sockets (pipewire, wayland...)
+    * Boot directory (access to the BIOS vars)
+    * Sys directory for the same reason as the 
 
 ## Depends on
 
