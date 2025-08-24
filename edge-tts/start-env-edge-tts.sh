@@ -1,5 +1,8 @@
 # Starts the environment for edge-tts
 
+# Compile the SECCOMP filter
+gcc ./SECCOMP_Filter.c -o init_seccomp.elf -lseccomp &&
+
 #aa-exec -p aa_edge_tts bwrap --unshare-all --share-net \
 bwrap --unshare-all --share-net \
 --new-session \
@@ -22,5 +25,7 @@ bwrap --unshare-all --share-net \
 --ro-bind /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf \
 --tmpfs /home \
 --bind ~/Dev/edge-tts /home \
+--tmpfs /startup \
+--ro-bind ./init_seccomp.elf /startup/init_seccomp.elf \
+/startup/init_seccomp.elf \
 /usr/bin/bash
-

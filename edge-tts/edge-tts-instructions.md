@@ -22,7 +22,14 @@ Environment: Ubuntu
     * All devices, except for /dev/null
     * To most of the /run directory as it contains many important sockets (pipewire, wayland...)
     * Boot directory (access to the BIOS vars)
-    * Sys directory for the same reason as the 
+    * Sys directory for the same reason as the /run
+
+* Is does not have a SECCOMP filter yet
+
+## Debug
+
+* Copied files from a Windows host might need: dos2unix
+* File descirptor: `exec 6< hello.txt && read <& 6 && echo "${input}"`
 
 ## Depends on
 
