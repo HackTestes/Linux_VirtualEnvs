@@ -9,7 +9,10 @@
 #include <stddef.h>
 #include <linux/sched.h> // Clone flags
 #include <sched.h>
+#include <signal.h> // For SIGCHLD
 #include <sys/socket.h> // Socket consts
+#include <asm/termbits.h> // IOCTL TTY consts
+#include <sys/ioctl.h>
 
 // It outputs the filter to a corresponding file
 int main(int argc, char *argv[]) {
@@ -93,24 +96,29 @@ int main(int argc, char *argv[]) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockopt), 0) != 0 ||
         // Clone needs some arguments check
         // No namespacing
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_CHILD_CLEARTID, CLONE_CHILD_CLEARTID)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_CHILD_SETTID, CLONE_CHILD_SETTID)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_CLEAR_SIGHAND, CLONE_CLEAR_SIGHAND)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_DETACHED, CLONE_DETACHED)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_FILES, CLONE_FILES)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_FS, CLONE_FS)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_INTO_CGROUP, CLONE_INTO_CGROUP)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_IO, CLONE_IO)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_PARENT, CLONE_PARENT)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_PARENT_SETTID, CLONE_PARENT_SETTID)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_PIDFD, CLONE_PIDFD)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_SETTLS, CLONE_SETTLS)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_SIGHAND, CLONE_SIGHAND)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_SYSVSEM, CLONE_SYSVSEM)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_THREAD, CLONE_THREAD)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_UNTRACED, CLONE_UNTRACED)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_VFORK, CLONE_VFORK)) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, CLONE_VM, CLONE_VM)) != 0 ||
+        // Masking explanation
+        /*
+            Let's say we only want to allow some flags:
+                * 0000 0001
+                * 0000 0010
+                * 0000 0100
+
+            If we merge all the flags (bitwise OR) we get:
+                * 0000 0111
+
+            We also want to block flags like these:
+                * 1000 0000
+                * 0001 0000
+                * 0100 0000
+                * 0100 0010
+                ...
+
+            To use a mask, we can use the NOT of the merged ALLOWED flags and compare the result to zero (zero is OK, different than zero is bad)
+                * NOT of merged allowed flags: 1111 1000
+                * AND with any of the allowed flags: 0000 0000
+                * AND with any of the blocked flags (say 1000 0000): 1000 0000
+        */
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone), 1, SCMP_A0(SCMP_CMP_MASKED_EQ, ~(CLONE_CHILD_CLEARTID | CLONE_CHILD_SETTID | CLONE_CLEAR_SIGHAND | CLONE_DETACHED | CLONE_FILES | CLONE_FS | CLONE_INTO_CGROUP | CLONE_IO | CLONE_PARENT | CLONE_PARENT_SETTID | CLONE_PIDFD | CLONE_SETTLS | CLONE_SIGHAND | CLONE_SYSVSEM | CLONE_THREAD | CLONE_UNTRACED | CLONE_VFORK | CLONE_VM | SIGCHLD), 0)) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fork), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(vfork), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(execve), 0) != 0 ||
@@ -333,7 +341,16 @@ int main(int argc, char *argv[]) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(io_pgetevents), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(pidfd_send_signal), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(pidfd_open), 0) != 0 ||
-        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 0) != 0 ||
+        // ioctls can be dangerous
+        // These restrictions are only for tty ioctls since we need to see the device being used to actually get the correct meaning
+        // In other words, to do proper filtering we need to know which device the ioctl is being issued against
+        // Therefore, I am assuming the only device accessible is the tty
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TCGETS)) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCGWINSZ)) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCSWINSZ)) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCGPGRP)) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCSPGRP)) != 0 ||
+
         //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone3), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(faccessat2), 0) != 0)
     {
