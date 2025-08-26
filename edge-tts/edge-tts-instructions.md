@@ -24,7 +24,20 @@ Environment: Ubuntu
     * Boot directory (access to the BIOS vars)
     * Sys directory for the same reason as the /run
 
-* Is does not have a SECCOMP filter yet
+* It uses a SECCOMP filter (allowlisting) based on the ones used by Flatpak and Android
+
+* Clone and clone3
+    * Namespacing is disallowed
+    * Clone3 uses a memory buffer to pass arguments and can't be verified by SECCOMP, so it was completely blocked
+
+* Socket
+    * Only "normal" networking (no bluetooth, vsocks...)
+
+* ioctl (SECCOMP)
+    * It only allows TTY ioctl operations. However, the user must make sure that no other device is accessible since the same op codes can have different meanings depending on the device
+
+* io_uring
+    * Restricted by default since it can bypass SECCOMP filters by issuing system calls trough a memory buffer
 
 ## Debug
 
@@ -34,7 +47,7 @@ Environment: Ubuntu
 ## Depends on
 
 * Bubblewarp
-* AppArmor
+* AppArmor (no longer needed)
 * Python
 * Pip
 

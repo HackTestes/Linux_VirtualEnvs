@@ -2,8 +2,8 @@
 
 # Compile the SECCOMP filter
 gcc ./SECCOMP_Filter.c -o init_seccomp.elf -lseccomp &&
-./init_seccomp.elf > seccomp_filter.cbpf &&
-exec 4< ./seccomp_filter.cbpf &&
+./init_seccomp.elf > seccomp_filter.cbpf && # Export the filter
+exec 4< ./seccomp_filter.cbpf && # Open as a read-only file descriptor
 
 #aa-exec -p aa_edge_tts bwrap --unshare-all --share-net \
 bwrap --unshare-all --share-net \
