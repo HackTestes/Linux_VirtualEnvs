@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Allow essential syscalls
+    // Allow essential syscalls x86_64 only
     // See: https://www.chromium.org/chromium-os/developer-library/reference/linux-constants/syscalls/
     // Use the flatpak's blocklist as reference as well: https://github.com/flatpak/flatpak/blob/main/common/flatpak-run.c
     // Use android's allowlist as well: https://android.googlesource.com/platform/bionic/+/master/libc/SYSCALLS.TXT
@@ -147,6 +147,7 @@ int main(int argc, char *argv[]) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mkdir), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rmdir), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(creat), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlink), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chmod), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fchmod), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chown), 0) != 0 ||
@@ -162,12 +163,15 @@ int main(int argc, char *argv[]) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getgid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(geteuid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getegid), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(setpgid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getppid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getpgrp), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getgroups), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getresuid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getresgid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getpgid), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(setfsuid), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(setfsgid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsid), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(capget), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rt_sigpending), 0) != 0 ||
@@ -346,10 +350,15 @@ int main(int argc, char *argv[]) {
         // In other words, to do proper filtering we need to know which device the ioctl is being issued against
         // Therefore, I am assuming the only device accessible is the tty
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TCGETS)) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TCSETS)) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TCSETSW)) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCGWINSZ)) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCSWINSZ)) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCGPGRP)) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl), 1, SCMP_A1(SCMP_CMP_EQ, TIOCSPGRP)) != 0 ||
+
+        // Undocumented syscall
+        //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rseq), 0) != 0 ||
 
         //seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(clone3), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(faccessat2), 0) != 0)
@@ -359,17 +368,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    /*
     // Export the BPF filter to stdout
     // This makes it easy to redirect to a file or use it as input of a jailer
-    int filter_fd = open("/tmp/seccomp_filter.bpf", O_WRONLY|O_CREAT);
-    if (filter_fd == -1)
-    {
-        return 1;
-    }*/
-
-    //if (seccomp_export_bpf(ctx, filter_fd) != 0) {
-    if (seccomp_load(ctx) != 0)
+    if (seccomp_export_bpf(ctx, 1) != 0)
+    //if (seccomp_load(ctx) != 0)
     {
         perror("seccomp_load");
         seccomp_release(ctx);
@@ -379,6 +381,8 @@ int main(int argc, char *argv[]) {
     // Release the filter context
     seccomp_release(ctx);
 
+    // Useful for debugging
+    /*
     // Execute a new program
     // argv[1]: the new program
     // argv+2: all the arguments that the new program will take
@@ -402,4 +406,5 @@ int main(int argc, char *argv[]) {
             return 1;
         }
     }
+    */
 }

@@ -2,10 +2,13 @@
 
 # Compile the SECCOMP filter
 gcc ./SECCOMP_Filter.c -o init_seccomp.elf -lseccomp &&
+./init_seccomp.elf > seccomp_filter.cbpf &&
+exec 4< ./seccomp_filter.cbpf &&
 
 #aa-exec -p aa_edge_tts bwrap --unshare-all --share-net \
 bwrap --unshare-all --share-net \
 --new-session \
+--seccomp 4 \
 --ro-bind /bin /bin \
 --ro-bind /etc /etc \
 --ro-bind /lib /lib \
@@ -26,6 +29,4 @@ bwrap --unshare-all --share-net \
 --tmpfs /home \
 --bind ~/Dev/edge-tts /home \
 --tmpfs /startup \
---ro-bind ./init_seccomp.elf /startup/init_seccomp.elf \
-/startup/init_seccomp.elf \
 /usr/bin/bash
