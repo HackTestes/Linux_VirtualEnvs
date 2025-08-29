@@ -47,6 +47,7 @@ Environment: Ubuntu
 ## Depends on
 
 * Bubblewarp
+* Libseccomp
 * AppArmor (no longer needed)
 * Python
 * Pip
