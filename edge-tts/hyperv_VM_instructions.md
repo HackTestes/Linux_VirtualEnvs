@@ -58,12 +58,10 @@ Regular HyperV VMs
 * Hyper-V firewall is also configured (the commands are very similar to the WSL ones)
     * See: https://learn.microsoft.com/en-us/powershell/module/hyper-v/?view=windowsserver2025-ps
 
-    * Default allow outbound: `Add-VMNetworkAdapterExtendedAcl -VMName $vm -Direction Outbound -Action Allow -Weight 0`
-        * Lowest weight is applied last
-
-    * Default deny inbound connections: `Add-VMNetworkAdapterExtendedAcl -VMName $vm -Direction Inbound -Action Deny -Weight 0 -LocalPort 22`
-
-    * Allow ssh connections only by the host system: `Add-VMNetworkAdapterExtendedAcl -VMName $vm -Direction Inbound -LocalPort 22 -Action Allow -RemoteIPAddress 172.17.0.0/12 Weight 3`
+    * Allow ssh connections only by the host system:
+        * `Add-VMNetworkAdapterExtendedAcl -VMName $vm -Direction Inbound -LocalPort 22 -Action Deny -Weight 2`
+        * `Add-VMNetworkAdapterExtendedAcl -VMName $vm -Direction Inbound -LocalPort 22 -Action Allow -RemoteIPAddress 172.17.0.0/12 -Weight 3`
+        * `Add-VMNetworkAdapterExtendedAcl -VMName $vm -Direction Outbound -LocalPort 22 -Action Allow -RemoteIPAddress 172.17.0.0/12 -Weight 4`
 
     * Check if everything was set:
         * `Get-VMNetworkAdapterAcl -VMName $vm`
