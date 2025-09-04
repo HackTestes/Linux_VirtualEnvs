@@ -5,7 +5,7 @@
 * Setup the virtual switch to use a pre-defined MAC address: AA-AA-AA-AA-AA-AA (HyperV usually uses 00-15-5d-00-5d-*)
 * Connection is done by using the network interface: ssh
 * Use a variable for VM name: `$vm = 'Fedora 42'`
-* Username: `$user = "caiohvm"`
+* Username: `$guest_user = "caiohvm"`
 
 ## Firewall
 
@@ -85,7 +85,7 @@ Regular HyperV VMs
 
 ### Guest
 
-`~ = /home/$user`
+`~ = /home/$guest_user`
 
 ```
 ~/Dev
@@ -105,16 +105,16 @@ Regular HyperV VMs
 
 1. Connect SSH to the vm
 ```
-ssh.exe $user@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]})
+ssh.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]})
 ```
 
 1. Copy files to the Virtual Machine (input text)
 ```
-scp.exe .\Documents\Leis\*.txt $user@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$user/Dev/edge-tts/texts/
+scp.exe .\Documents\Leis\*.txt $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user$/Dev/edge-tts/texts/
 ```
 
 
 1. Copy files back to the host (output audio)
 ```
-scp.exe $user@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$user/Dev/edge-tts/texts/*.mp3 .\Documents\Leis\Audio\
+scp.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user$/Dev/edge-tts/texts/*.mp3 .\Documents\Leis\Audio\
 ```

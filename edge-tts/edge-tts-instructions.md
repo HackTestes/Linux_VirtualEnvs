@@ -25,6 +25,7 @@ Environment: Fedora
 * It denies access to
     * All devices, except for /dev/null
     * To most of the /run directory as it contains many important sockets (pipewire, wayland...)
+    * /var contains links back to /run
     * Boot directory (access to the BIOS vars)
     * Sys directory for the same reason as the /run
 
@@ -47,6 +48,9 @@ Environment: Fedora
 
 * Copied files from a Windows host might need: `dos2unix`
 * File descirptor: `exec 6< hello.txt && read <& 6 && echo "${input}"`
+* Use it to find sockets: `find /etc -type s,p 2>/dev/null`
+    * If you need to find links: `find /bin -type l -exec ls -l {} \; 2>/dev/null`
+    * CAREFUL with symlinks from `/var` -> `/run`
 
 ## Depends on
 
