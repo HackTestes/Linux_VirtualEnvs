@@ -1,20 +1,18 @@
 # Instructions for edge-tts virtual env
 
-Environment: Ubuntu
+Environment: Fedora
 
-1. First load the AppArmor profile with `apparmor_parser` or copy the file into `/etc/apparmor.d/`
+1. First load the AppArmor profile with `apparmor_parser` or copy the file into `/etc/apparmor.d/` (NOT USED because Fedora only supports SELinux)
+
+1. Create the private home dir `mkdir ~/Dev && mkdir ~/Dev/edge-tts && mkdir ~/Dev/edge-tts/texts`
 
 1. Load the container with `bash ./start-env-edge-tts.sh`
 
-1. Create private home `mkdir ~`
+1. Install edge-tts with pip into the private home `pip install edge-tts`
 
-1. Create pip virtual env `mkdir ~/edge-tts && python -m venv ~/edge-tts`
+1. Copy all the text into the container (host path: `~/Dev/edge-tts/texts`)
 
-1. Activate python venv: `source ~/edge-tts/bin/activate`
-
-1. Download edge-tts `pip install edge-tts`
-
-1. Generate text: `edge-tts --voice pt-BR-FranciscaNeural --file /home/texts/*.txt --write-media /home/texts/*.mp3`
+1. Generate text: `cd ~/texts && bash start-tts.sh`
 
 ## Security notes
 

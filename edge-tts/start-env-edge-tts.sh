@@ -27,6 +27,5 @@ bwrap --unshare-all --share-net \
 --dir /run/systemd/resolve \
 --ro-bind /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf \
 --tmpfs /home \
---bind ~/Dev/edge-tts /home \
---tmpfs /startup \
+--bind ~/Dev/edge-tts /home/$USER \
 /usr/bin/bash
