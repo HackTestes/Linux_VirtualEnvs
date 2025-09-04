@@ -4,7 +4,13 @@ Environment: Fedora
 
 1. First load the AppArmor profile with `apparmor_parser` or copy the file into `/etc/apparmor.d/` (NOT USED because Fedora only supports SELinux)
 
-1. Create the private home dir `mkdir ~/Dev && mkdir ~/Dev/edge-tts && mkdir ~/Dev/edge-tts/texts`
+1. Create the private home dir `mkdir -p ~/Dev/edge-tts/texts`
+
+1. Change to the Downloads directory: `cd Downloads/`
+
+1. Download the scripts: `git clone --verbose --depth 1 https://github.com/HackTestes/Linux_VirtualEnvs ./LVE`
+
+1. Change directory: `cd ./LVE/edge-tts/`
 
 1. Load the container with `bash ./start-env-edge-tts.sh`
 
@@ -39,7 +45,7 @@ Environment: Fedora
 
 ## Debug
 
-* Copied files from a Windows host might need: dos2unix
+* Copied files from a Windows host might need: `dos2unix`
 * File descirptor: `exec 6< hello.txt && read <& 6 && echo "${input}"`
 
 ## Depends on

@@ -2,10 +2,10 @@
 
 ## General configuration
 
-* Setup the virtual switch to use a pre-defined MAC address: AA-AA-AA-AA-AA-AA
+* Setup the virtual switch to use a pre-defined MAC address: AA-AA-AA-AA-AA-AA (HyperV usually uses 00-15-5d-00-5d-*)
 * Connection is done by using the network interface: ssh
 * Use a variable for VM name: `$vm = 'Fedora 42'`
-* Username: `$user = caiohvm`
+* Username: `$user = "caiohvm"`
 
 ## Firewall
 
