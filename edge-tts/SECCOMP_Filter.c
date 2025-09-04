@@ -148,6 +148,8 @@ int main(int argc, char *argv[]) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mkdir), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(rmdir), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(creat), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(link), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(unlink), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlink), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chmod), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fchmod), 0) != 0 ||
@@ -287,7 +289,9 @@ int main(int argc, char *argv[]) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fchownat), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(futimesat), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(newfstatat), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(unlinkat), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(renameat), 0) != 0 ||
+        seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(linkat), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(readlinkat), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fchmodat), 0) != 0 ||
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(faccessat), 0) != 0 ||
