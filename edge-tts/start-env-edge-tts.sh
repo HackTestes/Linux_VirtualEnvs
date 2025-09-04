@@ -8,16 +8,19 @@ exec 4< ./seccomp_filter.cbpf && # Open as a read-only file descriptor
 #aa-exec -p aa_edge_tts bwrap --unshare-all --share-net \
 bwrap --unshare-all --share-net \
 --new-session \
+--die-with-parent \
+--uid $(id -u) \
+--gid $(id -g) \
 --seccomp 4 \
 --ro-bind /bin /bin \
 --ro-bind /etc /etc \
 --ro-bind /lib /lib \
 --ro-bind /lib64 /lib64 \
---ro-bind /opt /opt \
+--tmpfs /opt \
 --ro-bind /sbin /sbin \
---ro-bind /srv /srv \
+--tmpfs /srv \
 --ro-bind /usr /usr \
---ro-bind /var /var \
+--tmpfs /var \
 --tmpfs /dev \
 --dev-bind /dev/null /dev/null \
 --proc /proc \
