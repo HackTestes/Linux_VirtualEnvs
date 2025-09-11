@@ -8,7 +8,7 @@ cd ~/texts &&
 # See: https://stackoverflow.com/a/3894463
 ls *.txt | sed 's/\..*//' | xargs -i --max-procs=$MAX_JOBS bash -c "Generating {}.mp3...' && edge-tts --voice pt-BR-FranciscaNeural --file {}.txt --write-media {}.mp3 && echo 'Finished {}.mp3...'" &&
 
-# Transform all the mp3 files into .mp4
+# Transform all the mp3 files into mp4
 # Since this is all local, there is no need to limit the amount of jobs
 # ffmpeg explanation
 # -f lavfi -> device that generates the input (the color) - see: https://www.ffmpeg.org/ffmpeg-filters.html#allrgb_002c-allyuv_002c-color_002c-colorchart_002c-colorspectrum_002c-haldclutsrc_002c-nullsrc_002c-pal75bars_002c-pal100bars_002c-rgbtestsrc_002c-smptebars_002c-smptehdbars_002c-testsrc_002c-testsrc2_002c-yuvtestsrc
@@ -20,7 +20,7 @@ ls *.txt | sed 's/\..*//' | xargs -i --max-procs=$MAX_JOBS bash -c "Generating {
 # -preset slow -> trade-off between compression and performance
 # -r 1 -> output spf set to 1
 # -shortest -> Finish encoding when the shortest input stream ends (if this is not used, the output grows infinitely)
-ls *.mp3 | sed 's/\..*//' | xargs -i --max-procs=0 bash -c "ffmpeg -f lavfi -i color=c=black:s=16x16:r=1 -i {}.mp3 -preset slow -y -shortest -c:v libopenh264 -c:a copy -r 1 {}.mp4"
+#ls *.mp3 | sed 's/\..*//' | xargs -i --max-procs=0 bash -c "ffmpeg -f lavfi -i color=c=black:s=16x16:r=1 -i {}.mp3 -preset slow -y -shortest -c:v libopenh264 -c:a copy -r 1 {}.mp4"
 
 # TEST COMMAND
 # ffmpeg -f lavfi -i color=c=black:s=1x1:r=1 -i SistemaNacionalDeUnidadesDeConservacaoDaNatureza_9985_2000_altered.mp3 -preset slow -y -shortest -c:v libaom-av1 -c:a mp3 -r 1 SistemaNacionalDeUnidadesDeConservacaoDaNatureza_9985_2000_altered.mp4
