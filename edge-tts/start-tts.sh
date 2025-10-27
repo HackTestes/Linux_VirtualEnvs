@@ -1,12 +1,12 @@
 # Limit the amount of jobs so the client doesn't get flagged/mistaken for DoS
-MAX_JOBS=10
+MAX_JOBS=4
 
 # Chnage to the texts directory
 cd ~/texts &&
 
 # Get all the text files and transform them info .mp3 files (in other words, run the tts)
 # See: https://stackoverflow.com/a/3894463
-ls *.txt | sed 's/\..*//' | xargs -i --max-procs=$MAX_JOBS bash -c "echo 'Generating {}.mp3...' && edge-tts --voice pt-BR-FranciscaNeural --file {}.txt --write-media {}.mp3 && echo 'Finished {}.mp3...'" &&
+ls *.txt | sed 's/\..*//' | xargs -i --max-procs=$MAX_JOBS bash -c "echo 'Generating {}.mp3...' && edge-tts --voice pt-BR-FranciscaNeural --file {}.txt --write-media /tmp/{}.mp3 && mv /tmp/{}.mp3 ./ && echo 'Finished {}.mp3...'" &&
 
 # Transform all the mp3 files into mp4
 # Since this is all local, there is no need to limit the amount of jobs
