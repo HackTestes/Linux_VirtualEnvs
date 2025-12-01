@@ -6,7 +6,7 @@ Environment: Fedora
 
 1. Create the private home dir `mkdir -p ~/Dev/edge-tts/texts`
 
-1. Change to the Downloads directory: `cd Downloads/`
+1. Change to the Downloads directory: `cd ~/Downloads/`
 
 1. Download the scripts: `git clone --verbose --depth 1 https://github.com/HackTestes/Linux_VirtualEnvs ./LVE`
 
