@@ -31,4 +31,10 @@ bwrap --unshare-all --share-net \
 --ro-bind /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf \
 --tmpfs /home \
 --bind ~/Dev/edge-tts /home/$USER \
+setpriv --no-new-privs \
+--landlock-access fs \
+--landlock-rule path-beneath:execute,read-file,read-dir:/ \
+--landlock-rule path-beneath:execute,write-file,read-file,read-dir,remove-dir,remove-file,make-char,make-dir,make-reg,make-sock,make-fifo,make-block,make-sym,refer,truncate:/dev \
+--landlock-rule path-beneath:execute,write-file,read-file,read-dir,remove-dir,remove-file,make-char,make-dir,make-reg,make-sock,make-fifo,make-block,make-sym,refer,truncate:/home \
+--landlock-rule path-beneath:execute,write-file,read-file,read-dir,remove-dir,remove-file,make-char,make-dir,make-reg,make-sock,make-fifo,make-block,make-sym,refer,truncate:/tmp \
 /usr/bin/bash
