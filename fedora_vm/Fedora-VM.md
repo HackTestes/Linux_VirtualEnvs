@@ -47,7 +47,7 @@ sudo nano /etc/ssh/sshd_config
 
 * Install
 ``` bash
-sudo dnf install python pip uv pipx gcc libseccomp libseccomp-devel strace
+sudo dnf install python pip uv pipx gcc libseccomp libseccomp-devel strace pdftotext dos2unix
 ```
 
 ## Important references
