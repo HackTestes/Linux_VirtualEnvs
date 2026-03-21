@@ -4,7 +4,7 @@
 
 * Setup the virtual switch to use a pre-defined MAC address: AA-AA-AA-AA-AA-AA (HyperV usually uses 00-15-5d-00-5d-*)
 * Connection is done by using the network interface: ssh
-* Use a variable for VM name: `$vm = 'Fedora 42'`
+* Use a variable for VM name: `$vm = 'fedora-tts'`
 * Username: `$guest_user = "caiohvm"`
 
 ## Firewall
@@ -103,18 +103,23 @@ Regular HyperV VMs
 
 ## Commands
 
-1. Connect SSH to the vm
+1. Start the VM (Hyper-V)
+```powershell
+Start-VM "fedora-tts"
 ```
+
+1. Connect SSH to the vm
+```powershell
 ssh.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]})
 ```
 
 1. Copy files to the Virtual Machine (input text)
-```
+```powershell
 scp.exe .\Documents\Leis\*.txt $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user$/Dev/edge-tts/texts/
 ```
 
 
 1. Copy files back to the host (output audio)
-```
+```powershell
 scp.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user$/Dev/edge-tts/texts/*.mp3 .\Documents\Leis\Audio\
 ```
