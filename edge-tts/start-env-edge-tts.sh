@@ -31,6 +31,7 @@ bwrap --unshare-all --share-net \
 --ro-bind /run/systemd/resolve/stub-resolv.conf /run/systemd/resolve/stub-resolv.conf \
 --tmpfs /home \
 --bind ~/Dev/edge-tts /home/$USER \
+--ro-bind ~/Dev/audio-manager /home/$USER/audio-manager \
 setpriv --no-new-privs \
 --landlock-access fs \
 --landlock-rule path-beneath:execute,read-file,read-dir:/ \

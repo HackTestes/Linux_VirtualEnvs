@@ -115,11 +115,11 @@ ssh.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.
 
 1. Copy files to the Virtual Machine (input text)
 ```powershell
-scp.exe .\Documents\Leis\*.txt $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user$/Dev/edge-tts/texts/
+scp.exe .\Documents\Leis\*.txt $guest_user@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user/Dev/edge-tts/texts/
 ```
 
 
 1. Copy files back to the host (output audio)
 ```powershell
-scp.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user$/Dev/edge-tts/texts/*.mp3 .\Documents\Leis\Audio\
+scp.exe $guest_user@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]}):/home/$guest_user/Dev/edge-tts/texts/*.mp3 .\Documents\Leis\Audio\
 ```
