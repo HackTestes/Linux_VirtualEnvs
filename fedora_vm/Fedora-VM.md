@@ -47,10 +47,12 @@ sudo nano /etc/ssh/sshd_config
 
 * Install
 ``` bash
-sudo dnf install python pip uv pipx gcc libseccomp libseccomp-devel strace pdftotext dos2unix
+sudo dnf install python pip uv pipx gcc libseccomp libseccomp-devel strace pdftotext dos2unix tesseract* ImageMagick
 ```
 
 ## Important references
 
 * https://linuxconfig.org/how-to-install-start-and-connect-to-ssh-server-on-fedora-linux
 * https://www.atlantic.net/vps-hosting/how-to-setup-ssh-key-based-authentication-on-fedora/
+* https://github.com/tesseract-ocr/tesseract
+* https://github.com/imagemagick/imagemagick
