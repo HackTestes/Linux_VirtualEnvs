@@ -110,7 +110,7 @@ Start-VM "fedora-tts"
 
 1. Connect SSH to the vm
 ```powershell
-ssh.exe $guest_user$@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]})
+ssh.exe $guest_user@$(arp -a | Select-String -Pattern "00-00-00-00-00-" | %{$_.Line.Split(" ")[2]})
 ```
 
 1. Copy files to the Virtual Machine (input text)
